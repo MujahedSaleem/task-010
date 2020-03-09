@@ -5,8 +5,7 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.forms.models import model_to_dict
-
+from rest_framework.viewsets import ModelViewSet
 from ..models import Attendants, Vacation, Leave
 from .serializers import AttendantSerializer, VacationSerializer, LeaveSerializer
 from datetime import datetime, timedelta
@@ -17,31 +16,56 @@ def subtractTime(inTime, outTime) -> datetime:
     return (outTime - tIn)
 
 
-class ListEmployeeAttendant(ListAPIView):
+class ListEmployeeAttendant(ModelViewSet):
     serializer_class = AttendantSerializer
     queryset = Attendants.objects.all()
 
-    def get(self, request, *args, **kwargs):
+    @action(['get'], detail=False, url_path="WorkingHour/(?P<t>[^/.]+)")
+    def WorkingHour(self, request, *args, **kwargs):
         type = kwargs.get('t')
 
-        if type == 'w':
-            weekDateFromNow = datetime.now().date() - timedelta(days=7)
-            xo = [self.makingFunction(user, user.attendant.filter(date__gte=weekDateFromNow), 'Weekly') for user in
-                  User.objects.all()]
-            return Response(xo)
+        try:
+            if type == 'w':
+                weekDateFromNow = datetime.now().date() - timedelta(days=7)
+                xo = [self.makingFunction(user, user.attendant.filter(date__gte=weekDateFromNow), 'Weekly') for user in
+                      User.objects.all()]
+                return Response(xo)
 
-        elif type == 'q':
-            weekDateFromNow = datetime.now().date() - timedelta(days=91)
-            xo = [self.makingFunction(user, user.attendant.filter(date__gte=weekDateFromNow), 'quarter') for user in
-                  User.objects.all()]
-            return Response(xo)
-        elif type == 'y':
-            weekDateFromNow = datetime.now().date() - timedelta(days=365)
-            xo = [self.makingFunction(user, user.attendant.filter(date__gte=weekDateFromNow), 'yearly') for user in
-                  User.objects.all()]
-            return Response(xo)
-        else:
-            raise Exception()
+            elif type == 'q':
+                weekDateFromNow = datetime.now().date() - timedelta(days=91)
+                xo = [self.makingFunction(user, user.attendant.filter(date__gte=weekDateFromNow), 'quarter') for user in
+                      User.objects.all()]
+                return Response(xo)
+            elif type == 'y':
+                weekDateFromNow = datetime.now().date() - timedelta(days=365)
+                xo = [self.makingFunction(user, user.attendant.filter(date__gte=weekDateFromNow), 'yearly') for user in
+                      User.objects.all()]
+                return Response(xo)
+            else:
+                raise Exception("Determine the period")
+        except Exception as ex:
+            return Response(str(ex))
+
+    @action(['get'], detail=False)
+    def commingToLeavingForHoleTeam(self, request, *args, **kwargs):
+        try:
+            everyEmpWithWorkingHoure = [self.makingFunction(user, user.attendant, 'yearly') for user in
+                                        User.objects.all()]
+            everyEmpWithleavingHoure = [self.makingFunction(user, user.leaves, 'yearly') for user in
+                                        User.objects.all()]
+            sumWorkHour = 0
+            for emp in everyEmpWithWorkingHoure:
+                sumWorkHour += emp["workingHouresyearly"]
+            if sumWorkHour == 0:
+                raise Exception("This Team has no work hour ")
+            sumLeaveHour = 0
+            for emp in everyEmpWithleavingHoure:
+                sumLeaveHour += emp["workingHouresyearly"]
+
+            return Response(f"this team has an leaving of percent {sumLeaveHour // sumWorkHour}")
+
+        except Exception as ex:
+            return Response(str(ex))
 
     def makingFunction(self, emp, listAttends, t):
         list = [x for x in listAttends.values('inTime', 'outTime')]
@@ -53,6 +77,7 @@ class ListEmployeeAttendant(ListAPIView):
                 list[i]['outTime'] = outtime
         workingHoures = sum([subtractTime(t['inTime'], t['outTime']).hour for t in list])
         return {"EmpName": emp.username, f"workingHoures{t}": workingHoures}
+
 
 
 class CreateAttendantEmployee(CreateAPIView):
@@ -129,7 +154,7 @@ class CreateLeaveEmployee(CreateAPIView):
                     raise Exception("User dose't exist")
                 leave = Leave.objects.filter(Q(emp_id=empid) & Q(date=datetime.now().date()))
                 if leave.count() == 0:
-                    newLeave= self.serializer_class(data={'emp': empid})
+                    newLeave = self.serializer_class(data={'emp': empid})
                     newLeave.is_valid(raise_exception=True)
                     newLeave.save()
                     return Response({'message:Thank you'})
