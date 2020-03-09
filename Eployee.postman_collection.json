@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "11d02f69-56f0-4179-820d-2b9073d8a41f",
+		"name": "Eployee",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "checkIn/out",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "Basozte0568545931",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "mujahed",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/check/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"check",
+						"1"
+					]
+				},
+				"description": "check/employeeID will automaticlly detremine check in or out"
+			},
+			"response": []
+		},
+		{
+			"name": "vcation",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "Basozte0568545931",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "mujahed",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"date\":\"2020-3-15\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/vacation/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"vacation",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "leave",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "Basozte0568545931",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "mujahed",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"date\":\"2020-3-15\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/leave/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"leave",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "numberOfWorkHouerPeriod",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/work/WorkingHour/w",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"work",
+						"WorkingHour",
+						"w"
+					]
+				},
+				"description": "total number of worked hour per period\nWorkingHour/y|q|w\n\ny yearly\nq queardnit\nw weaklly"
+			},
+			"response": []
+		},
+		{
+			"name": "PercentWorkingHourToLeaveHoure",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/work/commingToLeavingForHoleTeam",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"work",
+						"commingToLeavingForHoleTeam"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
